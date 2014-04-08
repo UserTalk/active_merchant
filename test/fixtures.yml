@@ -378,6 +378,11 @@ pay_junction:
   login: 'pj-ql-01'
   password: 'pj-ql-01p'
 
+# Working credentials, no need to replace
+payfort:
+  some_credential: SOMECREDENTIAL
+  another_credential: ANOTHERCREDENTIAL
+
 payment_express:
   login: LOGIN
   password: PASSWORD
