@@ -166,9 +166,9 @@ module ActiveMerchant #:nodoc:
         add_pair params, 'PSWD',   @options[:api_password]
         add_pair params, 'WITHROOT', 'Y'
         add_pair params, 'FLAG3D', 'Y' if @options[:flag3d]
-        add_pair params, 'HTTP_USER_AGENT', @options[:http_user_agent] if @options[:http_user_agent]
-        add_pair params, 'HTTP_ACCEPT', @options [:http_accept] || '*/*' if @options[:http_accept]
-        add_pair params, 'WIN3DS', @options[:win3ds] if @options[:win3ds]
+        add_pair params, 'HTTP_USER_AGENT', @options[:http_user_agent] if @options[:flag3d] && @options[:http_user_agent]
+        add_pair params, 'HTTP_ACCEPT', @options [:http_accept] || "*/*" if @options[:flag3d]
+        add_pair params, 'WIN3DS', @options[:win3ds] || "MAINW" if @options[:flag3d]
         add_pair params, 'OPERATION', action
 
         response = parse(ssl_post(url(params['PAYID']), post_data(params)))
