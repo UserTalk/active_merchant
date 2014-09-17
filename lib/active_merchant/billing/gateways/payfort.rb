@@ -149,8 +149,15 @@ module ActiveMerchant #:nodoc:
       end
 
       def parse(body)
-        ncresponse = REXML::Document.new(body).root.elements["ncresponse"]
-        convert_attributes_to_hash(ncresponse.attributes)
+        root = REXML::Document.new(body).root
+        ncresponse = root.elements["ncresponse"]
+        response = convert_attributes_to_hash(ncresponse.attributes)
+        
+        if html_answer = REXML::XPath.first(root, "//HTML_ANSWER")
+          response["HTML_ANSWER"] = html_answer.text
+        end
+
+        response
       end
 
       def commit(action, params)
@@ -158,6 +165,10 @@ module ActiveMerchant #:nodoc:
         add_pair params, 'USERID', @options[:api_user]
         add_pair params, 'PSWD',   @options[:api_password]
         add_pair params, 'WITHROOT', 'Y'
+        add_pair params, 'FLAG3D', 'Y' if @options[:flag3d]
+        add_pair params, 'HTTP_USER_AGENT', @options[:http_user_agent] if @options[:http_user_agent]
+        add_pair params, 'HTTP_ACCEPT', @options [:http_accept] || '*/*' if @options[:http_accept]
+        add_pair params, 'WIN3DS', @options[:win3ds] if @options[:win3ds]
         add_pair params, 'OPERATION', action
 
         response = parse(ssl_post(url(params['PAYID']), post_data(params)))
@@ -170,7 +181,7 @@ module ActiveMerchant #:nodoc:
 
         response = Response.new(successful?(response), message_from(response), response, options)
         response.instance_eval do
-          def payid
+          def pay_id
             @params['PAYID']
           end
 
@@ -180,6 +191,14 @@ module ActiveMerchant #:nodoc:
 
           def alias
             @params['ALIAS']
+          end
+
+          def visa_secure?
+            @params['STATUS'] == '46'
+          end
+
+          def html_answer
+            @params['HTML_ANSWER']
           end
         end
         response
