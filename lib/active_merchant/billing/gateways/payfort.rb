@@ -48,7 +48,7 @@ module ActiveMerchant #:nodoc:
         add_order(post, money, options)
         add_customer(post, options)
         add_payment(post, payment, options)
-        add_3ds(post, options) if options[:flag3d]
+        add_3ds(post, options) if @options[:flag3d]
         add_address(post, options)
         commit(OPERS[:direct_sale], post)
       end
@@ -58,7 +58,7 @@ module ActiveMerchant #:nodoc:
         add_order(post, money, options)
         add_customer(post, options)
         add_payment(post, payment, options)
-        add_3ds(post, options) if options[:flag3d]
+        add_3ds(post, options) if @options[:flag3d]
         add_address(post, options)
         commit(OPERS[:authorize], post)
       end
@@ -123,12 +123,12 @@ module ActiveMerchant #:nodoc:
 
       def add_3ds(post, options)
         add_pair post, 'FLAG3D', 'Y'
-        add_pair post, 'HTTP_USER_AGENT', options[:http_user_agent]       if options[:http_user_agent]
-        add_pair post, 'HTTP_ACCEPT',     options [:http_accept] || "*/*"
-        add_pair post, 'WIN3DS',          options[:win3ds] || "MAINW"
-        add_pair post, 'ACCEPTURL',       options[:accept_url]            if options[:accept_url]
-        add_pair post, 'DECLINEURL',      options[:decline_url]           if options[:decline_url]
-        add_pair post, 'EXCEPTIONURL',    options[:exception_url]         if options[:exception_url]
+        add_pair post, 'HTTP_USER_AGENT', @options[:http_user_agent]       if @options[:http_user_agent]
+        add_pair post, 'HTTP_ACCEPT',     @options [:http_accept] || "*/*"
+        add_pair post, 'WIN3DS',          @options[:win3ds] || "MAINW"
+        add_pair post, 'ACCEPTURL',       @options[:accept_url]            if @options[:accept_url]
+        add_pair post, 'DECLINEURL',      @options[:decline_url]           if @options[:decline_url]
+        add_pair post, 'EXCEPTIONURL',    @options[:exception_url]         if @options[:exception_url]
       end
 
       def add_card(post, card)
