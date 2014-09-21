@@ -48,6 +48,7 @@ module ActiveMerchant #:nodoc:
         add_order(post, money, options)
         add_customer(post, options)
         add_payment(post, payment, options)
+        add_3ds(post, options) if options[:flag3d]
         add_address(post, options)
         commit(OPERS[:direct_sale], post)
       end
@@ -57,6 +58,7 @@ module ActiveMerchant #:nodoc:
         add_order(post, money, options)
         add_customer(post, options)
         add_payment(post, payment, options)
+        add_3ds(post, options) if options[:flag3d]
         add_address(post, options)
         commit(OPERS[:authorize], post)
       end
@@ -119,6 +121,16 @@ module ActiveMerchant #:nodoc:
         add_pair post, 'ECI', options[:eci].to_s || '9'
       end
 
+      def add_3ds(post, options)
+        add_pair post, 'FLAG3D', 'Y'
+        add_pair post, 'HTTP_USER_AGENT', options[:http_user_agent]       if options[:http_user_agent]
+        add_pair post, 'HTTP_ACCEPT',     options [:http_accept] || "*/*"
+        add_pair post, 'WIN3DS',          options[:win3ds] || "MAINW"
+        add_pair post, 'ACCEPTURL',       options[:accept_url]            if options[:accept_url]
+        add_pair post, 'DECLINEURL',      options[:decline_url]           if options[:decline_url]
+        add_pair post, 'EXCEPTIONURL',    options[:exception_url]         if options[:exception_url]
+      end
+
       def add_card(post, card)
         add_pair post, 'CARDNO', card.number
         add_pair post, 'CN', card.name
@@ -165,10 +177,6 @@ module ActiveMerchant #:nodoc:
         add_pair params, 'USERID', @options[:api_user]
         add_pair params, 'PSWD',   @options[:api_password]
         add_pair params, 'WITHROOT', 'Y'
-        add_pair params, 'FLAG3D', 'Y' if @options[:flag3d]
-        add_pair params, 'HTTP_USER_AGENT', @options[:http_user_agent] if @options[:flag3d] && @options[:http_user_agent]
-        add_pair params, 'HTTP_ACCEPT', @options [:http_accept] || "*/*" if @options[:flag3d]
-        add_pair params, 'WIN3DS', @options[:win3ds] || "MAINW" if @options[:flag3d]
         add_pair params, 'OPERATION', action
 
         response = parse(ssl_post(url(params['PAYID']), post_data(params)))
