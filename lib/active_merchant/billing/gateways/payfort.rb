@@ -129,6 +129,7 @@ module ActiveMerchant #:nodoc:
         add_pair post, 'ACCEPTURL',       @options[:accept_url]            if @options[:accept_url]
         add_pair post, 'DECLINEURL',      @options[:decline_url]           if @options[:decline_url]
         add_pair post, 'EXCEPTIONURL',    @options[:exception_url]         if @options[:exception_url]
+        add_pair post, 'PARAMPLUS',       options[:paramplus]              if options[:paramplus]
       end
 
       def add_card(post, card)
